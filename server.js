@@ -1,5 +1,6 @@
 const express = require('express');
 const mysql = require('mysql2');
+require('dotenv').config();
 
 
 const app = express();
@@ -8,11 +9,11 @@ const port = 3000;
 app.use(express.json());
 
 const connection = mysql.createConnection({
-    host: 'junction.proxy.rlwy.net',
-    user: 'newuser',
-    password: 'wLXREt9c',
-    database: 'mlp',
-    port: '48517'
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT
 });
 
 connection.connect();
