@@ -16,8 +16,6 @@ const connection = mysql.createConnection({
     port: process.env.DB_PORT
 });
 
-connection.connect();
-
 const executeQuery = (sql, res) => {
     connection.query(sql, (error, results) => {
         if (error) {
@@ -30,11 +28,13 @@ const executeQuery = (sql, res) => {
 };
 
 app.post('/api/custom-query', (req, res) => {
+    connection.connect();
     const sql = req.body.sql; // Expecting { sql: "YOUR SQL COMMAND" }
     if (!sql) {
         return res.status(400).json({ error: 'SQL command is required.' });
     }
     executeQuery(sql, res);
+    connection.close();
 });
 
 app.listen(port, () => {
