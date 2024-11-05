@@ -34,7 +34,13 @@ app.post('/api/custom-query', (req, res) => {
         return res.status(400).json({ error: 'SQL command is required.' });
     }
     executeQuery(sql, res);
-    connection.close();
+    connection.end((err) => {
+        if (err) {
+            console.error('Error closing the connection:', err);
+            return;
+        }
+        console.log('Connection closed gracefully');
+    });
 });
 
 app.listen(port, () => {
