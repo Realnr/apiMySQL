@@ -27,32 +27,42 @@ const createConnection = () => {
     });
 }
 
-
-const executeQuery = (sql, res) => {
-    connection.query(sql, (error, results) => {
-        if (error) {
-            console.error('Error executing query:', error);
-            res.status(500).json({ error: 'An error occurred while executing the query.' });
-            return;
-        }
-        res.json(results);
+const executeQuery = (sql) => {
+    return new Promise((resolve, reject) => {
+        connection.query(sql, (error, results) => {
+            if (error) {
+                reject('Error executing query: ' + error);
+                return;
+            }
+            resolve(results);
+        });
     });
 };
 
 app.post('/api/custom-query', (req, res) => {
     createConnection();
     const sql = req.body.sql; // Expecting { sql: "YOUR SQL COMMAND" }
+
     if (!sql) {
         return res.status(400).json({ error: 'SQL command is required.' });
     }
-    executeQuery(sql, res);
-    connection.end((err) => {
-        if (err) {
-            console.error('Error closing the connection:', err);
-            return;
-        }
-        console.log('Connection closed gracefully');
-    });
+
+    executeQuery(sql)
+        .then(results => {
+            res.json(results);
+            connection.end((err) => {
+                if (err) {
+                    console.error('Error closing the connection:', err);
+                } else {
+                    console.log('Connection closed gracefully');
+                }
+            });
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({ error: 'An error occurred while executing the query.' });
+            connection.end(); // Ensure connection is closed even on error
+        });
 });
 
 app.listen(port, () => {
