@@ -8,13 +8,24 @@ const port = 3000;
 
 app.use(express.json());
 
-const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT
-});
+let connection;
+
+const connection.createConnection = () => {
+        connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_NAME,
+            port: process.env.DB_PORT
+	});
+	connection.connect((err) => {
+        if (err) {
+            console.error('Error connecting to the database:', err);
+        } else {
+            console.log('Database connected successfully.');
+        });
+}
+
 
 const executeQuery = (sql, res) => {
     connection.query(sql, (error, results) => {
@@ -28,7 +39,7 @@ const executeQuery = (sql, res) => {
 };
 
 app.post('/api/custom-query', (req, res) => {
-    connection.connect();
+    connection.createConnection();
     const sql = req.body.sql; // Expecting { sql: "YOUR SQL COMMAND" }
     if (!sql) {
         return res.status(400).json({ error: 'SQL command is required.' });
