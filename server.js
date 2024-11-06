@@ -8,9 +8,9 @@ const port = 3000;
 
 app.use(express.json());
 
-let con;
+let connection;
 
-const con.createCon = () => {
+const createConnection = () => {
         connection = mysql.createConnection({
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
@@ -18,7 +18,13 @@ const con.createCon = () => {
             database: process.env.DB_NAME,
             port: process.env.DB_PORT
 	});
-	
+	connection.connect((err) => {
+        if (err) {
+            console.error('Error connecting to the database:', err);
+        } else {
+            console.log('Database connected successfully.');
+        }
+    });
 }
 
 
