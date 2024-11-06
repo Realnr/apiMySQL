@@ -40,7 +40,7 @@ const executeQuery = (sql, res) => {
 };
 
 app.post('/api/custom-query', (req, res) => {
-    connection.createConnection();
+    createConnection();
     const sql = req.body.sql; // Expecting { sql: "YOUR SQL COMMAND" }
     if (!sql) {
         return res.status(400).json({ error: 'SQL command is required.' });
